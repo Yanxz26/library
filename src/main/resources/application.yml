@@ -1,0 +1,100 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: library-server
+  profiles:
+    active: dev
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/library_db?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456
+    hikari:
+      maximum-pool-size: 20
+      idle-timeout: 30000
+      max-lifetime: 60000
+      connection-timeout: 30000
+  redis:
+    host: localhost
+    port: 6379
+    password:
+    database: 0
+    timeout: 1000ms
+    lettuce:
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 0
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+    default-property-inclusion: non_null
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.library.entity
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: isDelete
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+      update-strategy: not_null
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+
+# JWT配置
+jwt:
+  secret: Y2FtcHVzLWxpYnJhcnktand0LXNlY3JldC1rZXktMjAyNA==
+  expiration: 86400000
+  refresh-time: 1800000
+
+# SpringDoc/Swagger配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+  packages-to-scan: com.library.controller
+
+# 系统业务配置
+library:
+  config:
+    # 学生最大借阅数量
+    student-max-borrow: 10
+    # 教师最大借阅数量
+    teacher-max-borrow: 20
+    # 默认借阅时长(天)
+    default-borrow-days: 30
+    # 最大续借次数
+    max-renew-count: 1
+    # 续借时长(天)
+    renew-days: 30
+    # 逾期每日罚款金额(元)
+    overdue-fine-per-day: 0.1
+    # 预约有效期(天)
+    reserve-expire-days: 7
+    # 登录有效期(秒)
+    login-expire-seconds: 86400
+
+# 日志配置
+logging:
+  level:
+    com.library: debug
+    org.springframework.security: warn
+  file:
+    path: ./logs
+    name: library-server.log
+  logback:
+    rollingpolicy:
+      max-history: 30
+      max-file-size: 100MB

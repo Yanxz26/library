@@ -1,0 +1,62 @@
+// ============================================
+// 响应式样式
+// 校园图书管理系统
+// ============================================
+
+// 768px 以下
+@media (max-width: 768px) {
+  .page-container {
+    padding: 12px;
+  }
+
+  .search-form {
+    padding: 12px;
+    .el-form--inline .el-form-item {
+      display: block;
+      margin-right: 0;
+      margin-bottom: 8px;
+    }
+  }
+
+  .table-container {
+    padding: 12px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .welcome-banner {
+    padding: 16px;
+    .welcome-greeting {
+      font-size: 18px;
+    }
+  }
+
+  .quick-actions {
+    gap: 8px;
+    .quick-action-btn {
+      font-size: 12px;
+      padding: 6px 12px;
+    }
+  }
+}
+
+// 1024px 以下
+@media (max-width: 1024px) {
+  .chart-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+// 1440px 以上
+@media (min-width: 1440px) {
+  .stat-cards {
+    gap: 24px;
+  }
+
+  .chart-row {
+    gap: 24px;
+  }
+}

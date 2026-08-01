@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>校园图书管理系统</title>
+<style>
+:root{--pri:#4361ee;--pri2:#3a56d4;--suc:#2ec4b6;--war:#ff9f1c;--dan:#e71d36;--bg:#f0f2f5;--card:#fff;--tx:#2b2d42;--tx2:#8d99ae;--bd:#e8ecf1;--sh:0 2px 12px rgba(0,0,0,.08);--ra:12px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}
+a{color:var(--pri);text-decoration:none}
+/* Login */
+.login-wrap{display:flex;justify-content:center;align-items:center;min-height:100vh;background:linear-gradient(135deg,#4361ee,#3a0ca3)}
+.login-box{background:#fff;border-radius:20px;padding:48px 44px;width:440px;box-shadow:0 24px 80px rgba(0,0,0,.2)}
+.login-box .logo{text-align:center;font-size:48px;margin-bottom:8px}
+.login-box h1{font-size:26px;text-align:center;color:var(--pri);margin-bottom:4px}
+.login-box .sub{text-align:center;color:var(--tx2);font-size:14px;margin-bottom:32px}
+.fg{margin-bottom:18px}
+.fg label{display:block;margin-bottom:6px;font-weight:600;font-size:14px}
+.fg input,.fg select,.fg textarea{width:100%;padding:11px 14px;border:1.5px solid var(--bd);border-radius:10px;font-size:14px;outline:none;transition:all .2s;font-family:inherit}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--pri);box-shadow:0 0 0 3px rgba(67,97,238,.1)}
+.fg textarea{resize:vertical;min-height:80px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 22px;border-radius:10px;font-size:14px;font-weight:600;border:none;cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn-pri{background:var(--pri);color:#fff}.btn-pri:hover{background:var(--pri2);transform:translateY(-1px)}
+.btn-suc{background:var(--suc);color:#fff}.btn-war{background:var(--war);color:#fff}
+.btn-dan{background:var(--dan);color:#fff}.btn-out{background:#fff;border:1.5px solid var(--bd);color:var(--tx)}
+.btn-out:hover{background:var(--bg)}.btn-sm{padding:7px 14px;font-size:12px;border-radius:8px}
+.btn-xs{padding:4px 10px;font-size:11px;border-radius:6px}
+.btn-block{width:100%}.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.login-error{color:var(--dan);text-align:center;margin-top:12px;font-size:13px;display:none}
+.login-extra{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;font-size:13px}
+/* Layout */
+.app{display:none;min-height:100vh}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:240px;background:#1a1a2e;color:#fff;z-index:100;overflow-y:auto;overflow-x:hidden}
+.sidebar .logo{padding:22px 20px;font-size:18px;font-weight:700;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:10px}
+.sidebar nav{padding:8px 0}
+.sidebar nav .nav-group-title{padding:8px 20px 4px;font-size:11px;text-transform:uppercase;color:rgba(255,255,255,.35);letter-spacing:1px}
+.sidebar nav a{display:flex;align-items:center;gap:10px;padding:11px 20px;color:rgba(255,255,255,.7);text-decoration:none;font-size:13px;transition:all .15s;border-left:3px solid transparent}
+.sidebar nav a:hover,.sidebar nav a.active{background:rgba(255,255,255,.08);color:#fff;border-left-color:var(--pri)}
+.sidebar .user-bar{position:sticky;bottom:0;left:0;right:0;padding:16px 20px;background:#16162a;border-top:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:12px;cursor:pointer}
+.sidebar .user-bar .av{width:38px;height:38px;border-radius:50%;background:var(--pri);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+.sidebar .user-bar div small{color:rgba(255,255,255,.5)}
+.main{margin-left:240px;padding:20px 24px;min-height:100vh}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.header h2{font-size:22px;display:flex;align-items:center;gap:8px}
+/* Stats */
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+.sc{background:var(--card);border-radius:var(--ra);padding:20px;box-shadow:var(--sh);display:flex;align-items:center;gap:14px;transition:transform .2s}
+.sc:hover{transform:translateY(-2px)}
+.sc .ic{width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.ic-b{background:#eef2ff;color:var(--pri)}.ic-g{background:#e6f9f5;color:var(--suc)}
+.ic-o{background:#fff3e6;color:var(--war)}.ic-r{background:#fde8ec;color:var(--dan)}
+.sc .info h3{font-size:26px;margin-bottom:2px}.sc .info p{color:var(--tx2);font-size:12px}
+/* Card */
+.card{background:var(--card);border-radius:var(--ra);box-shadow:var(--sh);padding:20px;margin-bottom:20px}
+.card-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px}
+.card-h h3{font-size:16px}
+/* Toolbar */
+.tb{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.tb input,.tb select{padding:8px 12px;border:1.5px solid var(--bd);border-radius:8px;font-size:13px;outline:none;font-family:inherit}
+.tb input:focus,.tb select:focus{border-color:var(--pri)}
+.tb input{width:180px}
+/* Table */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+table th{text-align:left;padding:10px 12px;font-weight:600;color:var(--tx2);border-bottom:2px solid var(--bd);white-space:nowrap;background:var(--bg);font-size:12px}
+table td{padding:10px 12px;border-bottom:1px solid var(--bd)}
+table tr:hover{background:#f8f9ff}
+table .act{display:flex;gap:4px;flex-wrap:wrap}
+/* Badges */
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500}
+.b-suc{background:#e6f9f5;color:var(--suc)}.b-war{background:#fff3e6;color:var(--war)}
+.b-dan{background:#fde8ec;color:var(--dan)}.b-inf{background:#eef2ff;color:var(--pri)}
+.b-gray{background:#edf2f7;color:#718096}
+/* Pagination */
+.pg{display:flex;justify-content:center;align-items:center;gap:6px;margin-top:16px}
+.pg button{padding:7px 14px;border:1.5px solid var(--bd);border-radius:8px;background:#fff;cursor:pointer;font-size:13px;transition:all .2s}
+.pg button:hover:not(:disabled){background:var(--pri);color:#fff;border-color:var(--pri)}
+.pg button:disabled{opacity:.4;cursor:not-allowed}
+.pg .pg-info{font-size:13px;color:var(--tx2);margin:0 8px}
+/* Modal */
+.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:200;justify-content:center;align-items:center}
+.modal-overlay.on{display:flex}
+.modal{background:#fff;border-radius:16px;padding:28px 32px;width:560px;max-width:95vw;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:modalIn .2s ease}
+@keyframes modalIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal.wide{width:720px}
+.modal h3{margin-bottom:20px;font-size:18px;padding-bottom:12px;border-bottom:1px solid var(--bd)}
+.modal .btn-row{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;padding-top:12px;border-top:1px solid var(--bd)}
+/* Tabs */
+.tabs{display:flex;gap:0;margin-bottom:16px;border-bottom:2px solid var(--bd)}
+.tabs a{padding:10px 20px;font-size:13px;color:var(--tx2);text-decoration:none;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;cursor:pointer}
+.tabs a:hover,.tabs a.active{color:var(--pri);border-bottom-color:var(--pri)}
+/* Page */
+.page{display:none}.page.on{display:block}
+/* Toast */
+.toast{position:fixed;top:20px;right:20px;padding:14px 24px;border-radius:10px;color:#fff;font-weight:500;z-index:999;animation:slideIn .3s ease;display:none}
+.toast.suc{background:var(--suc)}.toast.err{background:var(--dan)}.toast.war{background:var(--war)}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+/* Empty */
+.empty{text-align:center;padding:40px 20px;color:var(--tx2)}
+.empty .icon{font-size:48px;margin-bottom:12px}
+/* Confirm */
+.confirm-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:300;justify-content:center;align-items:center}
+.confirm-overlay.on{display:flex}
+.confirm-box{background:#fff;border-radius:16px;padding:32px;width:400px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.confirm-box .icon{font-size:48px;margin-bottom:12px}
+.confirm-box h3{margin-bottom:8px}.confirm-box p{color:var(--tx2);margin-bottom:20px;font-size:14px}
+.confirm-box .btn-row{display:flex;gap:10px;justify-content:center}
+/* Responsive */
+@media(max-width:768px){.sidebar{width:60px}.sidebar .logo span,.sidebar nav a span,.sidebar nav .nav-group-title,.sidebar .user-bar div{display:none}.main{margin-left:60px}.sg{grid-template-columns:repeat(2,1fr)}.modal{width:95vw}}
+/* Quick actions */
+.qa{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.qa a{background:var(--card);border-radius:var(--ra);padding:16px;text-align:center;text-decoration:none;color:var(--tx);box-shadow:var(--sh);transition:all .2s;font-size:13px;font-weight:500}
+.qa a:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(0,0,0,.12)}
+.qa a .emoji{font-size:28px;display:block;margin-bottom:6px}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+<div class="confirm-overlay" id="confirmOverlay"><div class="confirm-box"><div class="icon">⚠️</div><h3 id="confirmTitle">确认操作</h3><p id="confirmMsg"></p><div class="btn-row"><button class="btn btn-out" onclick="closeConfirm()">取消</button><button class="btn btn-dan" id="confirmBtn" onclick="execConfirm()">确认</button></div></div></div>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="loginPage">
+<div class="login-box">
+<div class="logo">📚</div><h1>校园图书管理系统</h1><p class="sub">Campus Library Management</p>
+<div class="fg"><label>登录账号</label><input type="text" id="loginAccount" placeholder="学号/工号/管理员账号" value="admin"></div>
+<div class="fg"><label>登录密码</label><input type="password" id="loginPassword" placeholder="请输入密码" value="admin123" onkeydown="if(event.key==='Enter')doLogin()"></div>
+<div class="login-extra"><label><input type="checkbox" id="rememberPwd"> 记住密码</label><a href="#" onclick="toast('请联系管理员重置密码','war')">忘记密码?</a></div>
+<button class="btn btn-pri btn-block" onclick="doLogin()">登 录</button>
+<p class="login-error" id="loginError"></p>
+</div></div>
+
+<!-- APP -->
+<div class="app" id="appMain">
+<aside class="sidebar">
+<div class="logo">📚 图书管理系统</div>
+<nav id="sideNav"></nav>
+<div class="user-bar" onclick="router.nav('profile')">
+<div class="av" id="userAvatar">A</div><div><strong id="sUserName">管理员</strong><br><small id="sUserRole">超级管理员</small></div>
+</div></aside>
+<main class="main"><div id="pageContent"></div></main>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay"><div class="modal" id="modalBox"><div id="modalContent"></div></div></div>
+
+<script>
+// ==================== CORE ====================
+const API = '/api';
+let TOKEN = localStorage.getItem('lib_token') || '';
+let USER = JSON.parse(localStorage.getItem('lib_user') || 'null');
+const ROLE = { ADMIN: 'admin', LIBRARY: 'library', USER: 'user' };
+
+function isAdmin() { return USER && USER.roleCode === ROLE.ADMIN; }
+function isLibrary() { return USER && USER.roleCode === ROLE.LIBRARY; }
+function isStaff() { return USER && (USER.roleCode === ROLE.ADMIN || USER.roleCode === ROLE.LIBRARY); }
+
+async function apiCall(path, opts = {}) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (TOKEN) headers['Authorization'] = 'Bearer ' + TOKEN;
+  try {
+    const res = await fetch(API + path, { headers, ...opts });
+    if (res.status === 401) { logout(true); return { code: 401, message: '登录已过期' }; }
+    if (res.status === 403) { router.nav('403'); return { code: 403, message: '无权限' }; }
+    return await res.json();
+  } catch (e) { return { code: -1, message: '网络错误' }; }
+}
+
+function toast(msg, type = 'suc') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast ' + type; t.style.display = 'block';
+  clearTimeout(t._tid); t._tid = setTimeout(() => t.style.display = 'none', 2500);
+}
+
+let _confirmCb = null;
+function confirm(msg, cb, title = '确认操作') {
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmMsg').textContent = msg;
+  document.getElementById('confirmOverlay').classList.add('on');
+  _confirmCb = cb;
+}
+function execConfirm() { closeConfirm(); if (_confirmCb) _confirmCb(); }
+function closeConfirm() { document.getElementById('confirmOverlay').classList.remove('on'); _confirmCb = null; }
+
+function openModal(html, wide = false) {
+  document.getElementById('modalContent').innerHTML = html;
+  document.getElementById('modalBox').className = wide ? 'modal wide' : 'modal';
+  document.getElementById('modalOverlay').classList.add('on');
+}
+function closeModal() { document.getElementById('modalOverlay').classList.remove('on'); }
+document.getElementById('modalOverlay').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+
+// ==================== AUTH ====================
+async function doLogin() {
+  const account = document.getElementById('loginAccount').value.trim();
+  const password = document.getElementById('loginPassword').value.trim();
+  const el = document.getElementById('loginError');
+  if (!account || !password) { el.textContent = '请输入账号和密码'; el.style.display = 'block'; return; }
+  const res = await fetch(API + '/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userAccount: account, password }) }).then(r => r.json());
+  if (res.code === 200) {
+    TOKEN = res.data.token; USER = res.data;
+    localStorage.setItem('lib_token', TOKEN);
+    localStorage.setItem('lib_user', JSON.stringify(USER));
+    if (document.getElementById('rememberPwd').checked) { localStorage.setItem('lib_account', account); localStorage.setItem('lib_pwd', btoa(password)); }
+    else { localStorage.removeItem('lib_account'); localStorage.removeItem('lib_pwd'); }
+    showApp(); router.init();
+  } else { el.textContent = res.message || '登录失败'; el.style.display = 'block'; }
+}
+function logout(expired = false) {
+  TOKEN = ''; USER = null;
+  localStorage.removeItem('lib_token'); localStorage.removeItem('lib_user');
+  document.getElementById('appMain').style.display = 'none';
+  document.getElementById('loginPage').style.display = 'flex';
+  if (expired) toast('登录已过期，请重新登录', 'war');
+}
+function showApp() {
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('appMain').style.display = 'block';
+  document.getElementById('userAvatar').textContent = (USER.userName || 'U')[0];
+  document.getElementById('sUserName').textContent = USER.userName;
+  document.getElementById('sUserRole').textContent = USER.roleName || '';
+}
+
+// ==================== ROUTER ====================
+const router = {
+  current: '',
+  nav(page, params) {
+    this.current = page;
+    sessionStorage.setItem('lib_page', page);
+    const fn = this.pages[page];
+    if (fn) { fn(params); }
+    else { this.pages['404'](); }
+    document.querySelectorAll('#sideNav a').forEach(a => a.classList.remove('active'));
+    const link = document.querySelector(`#sideNav a[data-page="${page}"]`);
+    if (link) link.classList.add('active');
+  },
+  init() {
+    this.renderNav();
+    const saved = sessionStorage.getItem('lib_page');
+    this.nav(saved || (isStaff() ? 'dashboard' : 'home'));
+  },
+  renderNav() {
+    let nav = '';
+    if (isStaff()) {
+      nav += '<div class="nav-group-title">主菜单</div>';
+      nav += '<a href="#" data-page="dashboard" onclick="router.nav(\'dashboard\');return false">📊 系统首页</a>';
+      if (isAdmin()) {
+        nav += '<div class="nav-group-title">权限管理</div>';
+        nav += '<a href="#" data-page="users" onclick="router.nav(\'users\');return false">👥 用户管理</a>';
+        nav += '<a href="#" data-page="roles" onclick="router.nav(\'roles\');return false">🔑 角色管理</a>';
+      }
+      nav += '<div class="nav-group-title">图书管理</div>';
+      nav += '<a href="#" data-page="categories" onclick="router.nav(\'categories\');return false">📂 分类管理</a>';
+      nav += '<a href="#" data-page="books" onclick="router.nav(\'books\');return false">📖 图书管理</a>';
+      nav += '<div class="nav-group-title">借阅业务</div>';
+      nav += '<a href="#" data-page="borrows" onclick="router.nav(\'borrows\');return false">📋 借阅管理</a>';
+      nav += '<a href="#" data-page="overdue" onclick="router.nav(\'overdue\');return false">⚠️ 逾期管理</a>';
+      nav += '<a href="#" data-page="reserves" onclick="router.nav(\'reserves\');return false">📌 预约管理</a>';
+      nav += '<div class="nav-group-title">库存管理</div>';
+      nav += '<a href="#" data-page="inventory" onclick="router.nav(\'inventory\');return false">📦 库存盘点</a>';
+      nav += '<a href="#" data-page="loss" onclick="router.nav(\'loss\');return false">🗑️ 损耗管理</a>';
+      nav += '<div class="nav-group-title">数据与系统</div>';
+      nav += '<a href="#" data-page="statistics" onclick="router.nav(\'statistics\');return false">📈 数据统计</a>';
+      nav += '<a href="#" data-page="logs" onclick="router.nav(\'logs\');return false">📝 系统日志</a>';
+      if (isAdmin()) nav += '<a href="#" data-page="config" onclick="router.nav(\'config\');return false">⚙️ 系统配置</a>';
+    } else {
+      nav += '<div class="nav-group-title">图书服务</div>';
+      nav += '<a href="#" data-page="home" onclick="router.nav(\'home\');return false">🏠 图书首页</a>';
+      nav += '<a href="#" data-page="search" onclick="router.nav(\'search\');return false">🔍 图书检索</a>';
+      nav += '<div class="nav-group-title">我的</div>';
+      nav += '<a href="#" data-page="myBorrows" onclick="router.nav(\'myBorrows\');return false">📋 我的借阅</a>';
+      nav += '<a href="#" data-page="myReserves" onclick="router.nav(\'myReserves\');return false">📌 我的预约</a>';
+      nav += '<a href="#" data-page="myOverdue" onclick="router.nav(\'myOverdue\');return false">⚠️ 逾期账单</a>';
+    }
+    nav += '<div class="nav-group-title">个人</div>';
+    nav += '<a href="#" data-page="profile" onclick="router.nav(\'profile\');return false">👤 个人中心</a>';
+    nav += '<a href="#" data-page="changePwd" onclick="router.nav(\'changePwd\');return false">🔒 修改密码</a>';
+    nav += '<a href="#" onclick="confirm(\'确认退出登录?\',()=>logout())">🚪 退出系统</a>';
+    document.getElementById('sideNav').innerHTML = nav;
+  },
+  pages: {}
+};
+
+// ==================== UI HELPERS ====================
+function pageHeader(title, btns = '') { return `<div class="header"><h2>${title}</h2><div>${btns}</div></div>`; }
+function statCard(icon, color, num, label) { return `<div class="sc"><div class="ic ic-${color}">${icon}</div><div class="info"><h3>${num}</h3><p>${label}</p></div></div>`; }
+function badge(text, type) { const m = { suc: 'b-suc', war: 'b-war', dan: 'b-dan', inf: 'b-inf', gray: 'b-gray' }; return `<span class="badge ${m[type]||'b-gray'}">${text}</span>`; }
+function pagination(current, pages, total, navPage) {
+  if (pages <= 1) return '';
+  return `<div class="pg"><button ${current<=1?'disabled':''} onclick="router.nav('${navPage}',{page:${current-1}})">上一页</button><span class="pg-info">${current}/${pages} (共${total}条)</span><button ${current>=pages?'disabled':''} onclick="router.nav('${navPage}',{page:${current+1}})">下一页</button></div>`;
+}
+function buildTable(headers, rows, emptyMsg = '暂无数据') {
+  const h = headers.map(h => `<th>${h}</th>`).join('');
+  return `<div class="tbl-wrap"><table><thead><tr>${h}</tr></thead><tbody>${rows || `<tr><td colspan="${headers.length}" class="empty"><div class="icon">📭</div>${emptyMsg}</td></tr>`}</tbody></table></div>`;
+}
+
+// ==================== PAGES ====================
+router.pages.dashboard = async function() {
+  const [bs, us, brs, hot] = await Promise.all([
+    apiCall('/sys/statistics/book'), apiCall('/sys/statistics/user'),
+    apiCall('/sys/statistics/borrow'), apiCall('/sys/statistics/hot-books')
+  ]);
+  let stats = statCard('📚','b',bs.code===200?bs.data.totalBooks||0:'-','图书总量');
+  stats += statCard('👥','g',us.code===200?us.data.totalUsers||0:'-','用户总数');
+  stats += statCard('📋','o',brs.code===200?brs.data.currentBorrowing||0:'-','借阅中');
+  stats += statCard('⚠️','r',brs.code===200?brs.data.currentOverdue||0:'-','逾期中');
+  let hotRows = '';
+  if (hot.code === 200 && hot.data) {
+    hotRows = hot.data.slice(0,10).map((b,i) => `<tr><td>${i+1}</td><td>${b.bookName}</td><td>${b.author||'-'}</td><td>${badge((b.borrowCount||0)+'次','inf')}</td></tr>`).join('');
+  }
+  document.getElementById('pageContent').innerHTML = pageHeader('📊 系统首页') + `<div class="sg">${stats}</div><div class="card"><div class="card-h"><h3>📈 热门图书 TOP10</h3></div>${buildTable(['#','书名','作者','借阅次数'], hotRows)}</div>`;
+};
+
+// --- Users ---
+router.pages.users = async function(p) {
+  p = p || { page: 1 };
+  const q = new URLSearchParams({ current: p.page, size: 10 });
+  const res = await apiCall(`/sys/user/page?${q}`);
+  let rows = '';
+  const typeMap = { 1: '学生', 2: '教师', 3: '管理员' };
+  if (res.code === 200 && res.data.records) {
+    res.data.records.forEach(u => {
+      rows += `<tr><td>${u.userAccount}</td><td>${u.userName}</td><td>${typeMap[u.userType]||'-'}</td><td>${u.borrowNum}/${u.maxBorrow}</td><td>${badge(u.status===1?'正常':'禁用',u.status===1?'suc':'dan')}</td><td>${(u.createTime||'').substring(0,10)}</td><td class="act">${isAdmin()?`
+        <button class="btn btn-out btn-xs" onclick="editUser(${u.id})">编辑</button>
+        <button class="btn btn-out btn-xs" onclick="toggleUserStatus(${u.id},${u.status})">${u.status===1?'禁用':'启用'}</button>
+        <button class="btn btn-out btn-xs" onclick="resetUserPwd(${u.id})">重置密码</button>
+      `:`<button class="btn btn-out btn-xs" onclick="editUser(${u.id})">查看</button>`}</td></tr>`;
+    });
+  }
+  document.getElementById('pageContent').innerHTML = pageHeader('👥 用户管理', isAdmin() ? '<button class="btn btn-pri btn-sm" onclick="showUserForm()">+ 新增用户</button>' : '')
+    + `<div class="card">${buildTable(['账号','姓名','类型','借阅量','状态','创建时间','操作'], rows)}${res.code===200?pagination(res.data.current,res.data.pages,res.data.total,'users'):''}</div>`;
+};
+function showUserForm(user) {
+  openModal(`<h3>${user?'编辑用户':'新增用户'}</h3>
+    <div class="fg"><label>账号</label><input id="fu_acc" value="${user?user.userAccount||'':''}"></div>
+    <div class="fg"><label>姓名</label><input id="fu_name" value="${user?user.userName||'':''}"></div>
+    <div class="fg"><label>密码${user?'(留空不修改)':''}</label><input id="fu_pwd" type="password"></div>
+    <div class="fg"><label>角色</label><select id="fu_role"><option value="1" ${user&&user.roleId===1?'selected':''}>超级管理员</option><option value="2" ${user&&user.roleId===2?'selected':''}>图书管理员</option><option value="3" ${(!user||user.roleId===3)?'selected':''}>普通用户</option></select></div>
+    <div class="fg"><label>用户类型</label><select id="fu_type"><option value="1" ${!user||user.userType===1?'selected':''}>学生</option><option value="2" ${user&&user.userType===2?'selected':''}>教师</option><option value="3" ${user&&user.userType===3?'selected':''}>管理员</option></select></div>
+    <div class="fg"><label>手机号</label><input id="fu_phone" value="${user?user.phone||'':''}"></div>
+    <div class="fg"><label>邮箱</label><input id="fu_email" value="${user?user.email||'':''}"></div>
+    <div class="fg"><label>最大可借</label><input id="fu_max" type="number" value="${user?user.maxBorrow||10:10}"></div>
+    <div class="btn-row"><button class="btn btn-out" onclick="closeModal()">取消</button><button class="btn btn-pri" onclick="saveUser(${user?user.id:0})">保存</button></div>`);
+}
+async function editUser(id) { const r = await apiCall(`/sys/user/detail/${id}`); if (r.code===200) showUserForm(r.data); }
+async function saveUser(id) {
+  const data = { userAccount: document.getElementById('fu_acc').value, userName: document.getElementById('fu_name').value, roleId: parseInt(document.getElementById('fu_role').value), userType: parseInt(document.getElementById('fu_type').value), phone: document.getElementById('fu_phone').value, email: document.getElementById('fu_email').value, maxBorrow: parseInt(document.getElementById('fu_max').value)||10 };
+  const pwd = document.getElementById('fu_pwd').value; if (pwd) data.password = pwd;
+  if (id) data.id = id;
+  const r = await apiCall(id ? '/sys/user/update' : '/sys/user/add', { method: 'POST', body: JSON.stringify(data) });
+  if (r.code===200) { toast(r.message); closeModal(); router.nav('users',{page:1}); } else toast(r.message,'err');
+}
+async function toggleUserStatus(id, st) {
+  confirm(`确认${st===1?'禁用':'启用'}该账号？`, async () => {
+    const r = await apiCall(`/sys/user/update-status/${id}/${st===1?0:1}`, { method: 'POST' });
+    if (r.code===200) { toast(r.message); router.nav('users',{page:1}); } else toast(r.message,'err');
+  });
+}
+async function resetUserPwd(id) {
+  confirm('确认重置该用户密码？', async () => {
+    const r = await apiCall(`/auth/reset-password/${id}`, { method: 'POST' });
+    if (r.code===200) toast(r.message); else toast(r.message,'err');
+  });
+}
+
+// --- Roles ---
+router.pages.roles = function() {
+  document.getElementById('pageContent').innerHTML = pageHeader('🔑 角色管理')
+    + '<div class="card"><p>系统固定三类角色：<b>超级管理员(admin)</b>、<b>图书管理员(library)</b>、<b>普通用户(user)</b></p><p style="color:var(--tx2);margin-top:8px">基础角色不可删除，仅支持调整角色描述与权限分配。权限分配请联系系统管理员在后台数据库配置。</p></div>';
+};
+
+// --- Categories ---
+router.pages.categories = async function() {
+  const res = await apiCall('/sys/category/tree');
+  let rows = '';
+  if (res.code===200 && res.data) {
+    res.data.forEach(c => { rows += `<tr><td>${c.categoryName}</td><td>${c.parentId===0?'一级':'二级'}</td><td>${c.sort||0}</td><td>${badge(c.status===1?'启用':'禁用',c.status===1?'suc':'dan')}</td><td>${(c.createTime||'').substring(0,10)}</td><td class="act"><button class="btn btn-out btn-xs" onclick="showCatForm(${c.id})">编辑</button><button class="btn btn-out btn-xs" onclick="toggleCat(${c.id},${c.status})">${c.status===1?'禁用':'启用'}</button><button class="btn btn-dan btn-xs" onclick="delCat(${c.id})">删除</button></td></tr>`; });
+  }
+  document.getElementById('pageContent').innerHTML = pageHeader('📂 分类管理', '<button class="btn btn-pri btn-sm" onclick="showCatForm()">+ 新增分类</button>')
+    + `<div class="card">${buildTable(['名称','层级','排序','状态','创建时间','操作'], rows)}</div>`;
+};
+function showCatForm(cat) {
+  openModal(`<h3>${cat?'编辑':'新增'}分类</h3>
+    <div class="fg"><label>分类名称</label><input id="fc_name" value="${cat?cat.categoryName||'':''}"></div>
+    <div class="fg"><label>父分类ID(0=一级)</label><input id="fc_pid" type="number" value="${cat?cat.parentId||0:0}"></div>
+    <div class="fg"><label>排序</label><input id="fc_sort" type="number" value="${cat?cat.sort||0:0}"></div>
+    <div class="btn-row"><button class="btn btn-out" onclick="closeModal()">取消</button><button class="btn btn-pri" onclick="saveCat(${cat?cat.id:0})">保存</button></div>`);
+}
+async function saveCat(id) {
+  const data = { categoryName: document.getElementById('fc_name').value, parentId: parseInt(document.getElementById('fc_pid').value)||0, sort: parseInt(document.getElementById('fc_sort').value)||0 };
+  if (id) data.id = id;
+  const r = await apiCall(id?'/sys/category/update':'/sys/category/add', { method: 'POST', body: JSON.stringify(data) });
+  if (r.code===200) { toast(r.message); closeModal(); router.nav('categories'); } else toast(r.message,'err');
+}
+async function toggleCat(id, st) { const r = await apiCall(`/sys/category/update-status/${id}/${st===1?0:1}`,{method:'POST'}); if (r.code===200){toast(r.message);router.nav('categories');} else toast(r.message,'err'); }
+async function delCat(id) { confirm('确认删除？', async () => { const r = await apiCall(`/sys/category/delete/${id}`,{method:'DELETE'}); if (r.code===200){toast(r.message);router.nav('categories');} else toast(r.message,'err'); }); }
+
+// --- Books ---
+router.pages.books = async function(p) {
+  p = p || { page: 1 };
+  const q = new URLSearchParams({ current: p.page, size: 10 });
+  if (p.name) q.set('bookName', p.name);
+  if (p.author) q.set('author', p.author);
+  if (p.status) q.set('status', p.status);
+  const res = await apiCall(`/sys/book/page?${q}`);
+  let rows = '';
+  if (res.code===200 && res.data.records) {
+    res.data.records.forEach(b => { rows += `<tr><td>${b.bookNo}</td><td>${b.bookName}</td><td>${b.author}</td><td>${b.publisher||'-'}</td><td>${b.remainNum}/${b.totalNum}</td><td>${badge(b.status===1?'在架':'下架',b.status===1?'suc':'dan')}</td><td class="act"><button class="btn btn-out btn-xs" onclick="editBook(${b.id})">编辑</button><button class="btn ${b.status===1?'btn-war':'btn-suc'} btn-xs" onclick="toggleBook(${b.id},${b.status})">${b.status===1?'下架':'上架'}</button><button class="btn btn-out btn-xs" onclick="addStock(${b.id})">补库存</button><button class="btn btn-dan btn-xs" onclick="delBook(${b.id})">删除</button></td></tr>`; });
+  }
+  document.getElementById('pageContent').innerHTML = pageHeader('📖 图书管理', '<button class="btn btn-pri btn-sm" onclick="showBookForm()">+ 新增图书</button>')
+    + `<div class="card"><div class="tb"><input placeholder="🔍 书名" id="bk_name" value="${p.name||''}" onkeydown="if(event.key==='Enter')searchBooks()"><input placeholder="作者" id="bk_author" value="${p.author||''}" onkeydown="if(event.key==='Enter')searchBooks()"><select id="bk_status" onchange="searchBooks()"><option value="">全部</option><option value="1" ${p.status==='1'?'selected':''}>在架</option><option value="0" ${p.status==='0'?'selected':''}>下架</option></select><button class="btn btn-out btn-sm" onclick="searchBooks()">搜索</button></div>${buildTable(['编号','书名','作者','出版社','库存','状态','操作'], rows)}${res.code===200?pagination(res.data.current,res.data.pages,res.data.total,'books'):''}</div>`;
+};
+function searchBooks() { router.nav('books', { page: 1, name: document.getElementById('bk_name').value, author: document.getElementById('bk_author').value, status: document.getElementById('bk_status').value }); }
+function showBookForm(book) {
+  openModal(`<h3>${book?'编辑':'新增'}图书</h3>
+    <div class="fg"><label>图书编号</label><input id="fb_no" value="${book?book.bookNo||'':''}"></div>
+    <div class="fg"><label>ISBN</label><input id="fb_isbn" value="${book?book.isbn||'':''}"></div>
+    <div class="fg"><label>书名</label><input id="fb_name" value="${book?book.bookName||'':''}"></div>
+    <div class="fg"><label>作者</label><input id="fb_author" value="${book?book.author||'':''}"></div>
+    <div class="fg"><label>出版社</label><input id="fb_pub" value="${book?book.publisher||'':''}"></div>
+    <div class="fg"><label>分类ID</label><input id="fb_cat" type="number" value="${book?book.categoryId||1:1}"></div>
+    <div class="fg"><label>价格</label><input id="fb_price" type="number" step="0.01" value="${book?book.price||'':''}"></div>
+    <div class="fg"><label>总数量</label><input id="fb_total" type="number" value="${book?book.totalNum||1:1}"></div>
+    <div class="fg"><label>馆藏位置</label><input id="fb_loc" value="${book?book.location||'':''}"></div>
+    <div class="fg"><label>简介</label><textarea id="fb_desc">${book?book.bookDesc||'':''}</textarea></div>
+    <div class="btn-row"><button class="btn btn-out" onclick="closeModal()">取消</button><button class="btn btn-pri" onclick="saveBook(${book?book.id:0})">保存</button></div>`, true);
+}
+async function editBook(id) { const r = await apiCall(`/sys/book/detail/${id}`); if (r.code===200) showBookForm(r.data); }
+async function saveBook(id) {
+  const data = { bookNo: document.getElementById('fb_no').value, isbn: document.getElementById('fb_isbn').value, bookName: document.getElementById('fb_name').value, author: document.getElementById('fb_author').value, publisher: document.getElementById('fb_pub').value, categoryId: parseInt(document.getElementById('fb_cat').value)||1, price: parseFloat(document.getElementById('fb_price').value)||0, totalNum: parseInt(document.getElementById('fb_total').value)||1, location: document.getElementById('fb_loc').value, bookDesc: document.getElementById('fb_desc').value };
+  if (id) data.id = id;
+  const r = await apiCall(id?'/sys/book/update':'/sys/book/add', { method: 'POST', body: JSON.stringify(data) });
+  if (r.code===200) { toast(r.message); closeModal(); router.nav('books',{page:1}); } else toast(r.message,'err');
+}
+async function toggleBook(id, st) { const r = await apiCall(st===1?`/sys/book/off-shelf/${id}`:`/sys/book/on-shelf/${id}`,{method:'POST'}); if (r.code===200){toast(r.message);router.nav('books',{page:1});} else toast(r.message,'err'); }
+function addStock(id) { openModal(`<h3>库存增补</h3><div class="fg"><label>增补数量</label><input id="fs_num" type="number" value="1" min="1"></div><div class="btn-row"><button class="btn btn-out" onclick="closeModal()">取消</button><button class="btn btn-pri" onclick="doAddStock(${id})">确认</button></div>`); }
+async function doAddStock(id) { const n = parseInt(document.getElementById('fs_num').value)||1; const r = await apiCall(`/sys/book/add-stock/${id}/${n}`,{method:'POST'}); if (r.code===200){toast(r.message);closeModal();router.nav('books',{page:1});} else toast(r.message,'err'); }
+async function delBook(id) { confirm('确认删除？', async () => { const r = await apiCall(`/sys/book/delete/${id}`,{method:'DELETE'}); if (r.code===200){toast(r.message);router.nav('books',{page:1});} else toast(r.message,'err'); }); }
+
+// --- Borrows ---
+router.pages.borrows = async function(p) {
+  p = p || { page: 1, status: '' };
+  const q = new URLSearchParams({ current: p.page, size: 10 });
+  if (p.status) q.set('borrowStatus', p.status);
+  const res = await apiCall(`/borrow/page?${q}`);
+  const sm = { 1: ['借阅中','inf'], 2: ['已归还','suc'], 3: ['已逾期','dan'] };
+  let rows = '';
+  if (res.code===200 && res.data.records) {
+    res.data.records.forEach(b => { const [t,c] = sm[b.borrowStatus]||['未知','gray']; rows += `<tr><td>${b.id}</td><td>${b.userId}</td><td>${b.bookId}</td><td>${(b.borrowTime||'').substring(0,10)}</td><td>${(b.expireTime||'').substring(0,10)}</td><td>${badge(t,c)}</td><td class="act">${b.borrowStatus===1||b.borrowStatus===3?`<button class="btn btn-suc btn-xs" onclick="returnBorrow(${b.id})">归还</button>`:''}</td></tr>`; });
+  }
+  document.getElementById('pageContent').innerHTML = pageHeader('📋 借阅管理')
+    + `<div class="card"><div class="tb"><select onchange="router.nav('borrows',{page:1,status:this.value})"><option value="">全部</option><option value="1" ${p.status==='1'?'selected':''}>借阅中</option><option value="2" ${p.status==='2'?'selected':''}>已归还</option><option value="3" ${p.status==='3'?'selected':''}>已逾期</option></select></div>${buildTable(['ID','用户','图书','借阅日','到期日','状态','操作'], rows)}${res.code===200?pagination(res.data.current,res.data.pages,res.data.total,'borrows'):''}</div>`;
+};
+async function returnBorrow(id) { confirm('确认归还？', async () => { const r = await apiCall(`/borrow/admin-return/${id}`,{method:'POST'}); if (r.code===200){toast(r.message);router.nav('borrows',{page:1});} else toast(r.message,'err'); }); }
+
+// --- Overdue ---
+router.pages.overdue = async function(p) {
+  p = p || { page: 1, ps: '0' };
+  const q = new URLSearchParams({ current: p.page, size: 10 });
+  if (p.ps) q.set('payStatus', p.ps);
+  const res = await apiCall(`/overdue/page?${q}`);
+  let rows = '';
+  if (res.code===200 && res.data.records) {
+    res.data.records.forEach(o => { rows += `<tr><td>${o.id}</td><td>${o.userId}</td><td>${o.bookId}</td><td>${o.overdueDays}天</td><td>¥${o.fineMoney}</td><td>${badge(o.payStatus===1?'已缴费':'未缴费',o.payStatus===1?'suc':'dan')}</td><td class="act">${o.payStatus===0?`<button class="btn btn-war btn-xs" onclick="waiveFine(${o.id})">减免</button>`:''}</td></tr>`; });
+  }
+  document.getElementById('pageContent').innerHTML = pageHeader('⚠️ 逾期管理')
+    + `<div class="card"><div class="tb"><select onchange="router.nav('overdue',{page:1,ps:this.value})"><option value="0" ${p.ps==='0'?'selected':''}>未缴费</option><option value="1" ${p.ps==='1'?'selected':''}>已缴费</option><option value="">全部</option></select></div>${buildTable(['ID','用户','图书','天数','罚款','状态','操作'], rows)}${res.code===200?pagination(res.data.current,res.data.pages,res.data.total,'overdue'):''}</div>`;
+};
+async function waiveFine(id) { confirm('确认减免该罚款？', async () => { const r = await apiCall(`/overdue/waive/${id}?reason=管理员减免`,{method:'POST'}); if (r.code===200){toast(r.message);router.nav('overdue',{page:1});} else toast(r.message,'err'); }); }
+
+// --- Reserves ---
+router.pages.reserves = async function() {
+  const res = await apiCall('/reserve/page?current=1&size=50');
+  const sm = { 1: ['待生效','inf'], 2: ['已完成','suc'], 3: ['已失效','gray'] };
+  let rows = '';
+  if (res.code===200 && res.data.records) {
+    res.data.records.forEach(r => { const [t,c] = sm[r.reserveStatus]||['未知','gray']; rows += `<tr><td>${r.id}</td><td>${r.userId}</td><td>${r.bookId}</td><td>${(r.reserveTime||'').substring(0,10)}</td><td>${(r.expireTime||'').substring(0,10)}</td><td>${badge(t,c)}</td></tr>`; });
+  }
+  document.getElementById('pageContent').innerHTML = pageHeader('📌 预约管理') + `<div class="card">${buildTable(['ID','用户','图书','预约日','失效日','状态'], rows)}</div>`;
+};
+
+// --- Inventory ---
+router.pages.inventory = async function() {
+  const res = await apiCall('/sys/inventory/page?current=1&size=50');
+  let rows = '';
+  if (res.code===200 && res.data.records) {
+    res.data.records.forEach(iv => { const diff = iv.diffNum>0?`+${iv.diffNum}(盘盈)`:iv.diffNum<0?`${iv.diffNum}(盘亏)`:'一致'; rows += `<tr><td>${iv.id}</td><td>${iv.bookId}</td><td>${iv.systemNum}</td><td>${iv.actualNum}</td><td>${badge(diff,iv.diffNum===0?'suc':iv.diffNum>0?'inf':'dan')}</td><td>${(iv.inventoryTime||'').substring(0,10)}</td></tr>`; });
+  }
+  document.getElementById('pageContent').innerHTML = pageHeader('📦 库存盘点', '<button class="btn btn-pri btn-sm" onclick="showInvForm()">+ 新增盘点</button>') + `<div class="card">${buildTable(['ID','图书','系统库存','实际','差异','时间'], rows)}</div>`;
+};
+function showInvForm() { openModal(`<h3>新增盘点</h3><div class="fg"><label>图书ID</label><input id="fi_book" type="number"></div><div class="fg"><label>实际数量</label><input id="fi_actual" type="number"></div><div class="fg"><label>备注</label><input id="fi_remark"></div><div class="btn-row"><button class="btn btn-out" onclick="closeModal()">取消</button><button class="btn btn-pri" onclick="doInv()">提交</button></div>`); }
+async function doInv() { const r = await apiCall('/sys/inventory/do',{method:'POST',body:JSON.stringify({bookId:parseInt(document.getElementById('fi_book').value),actualNum:parseInt(document.getElementById('fi_actual').value),remark:document.getElementById('fi_remark').value})}); if (r.code===200){toast(r.message);closeModal();router.nav('inventory');} else toast(r.message,'err'); }
+
+// --- Loss ---
+router.pages.loss = async function() {
+  const res = await apiCall('/sys/loss/page?current=1&size=50');
+  const lm = { 1: '破损', 2: '丢失', 3: '报废' };
+  let rows = '';
+  if (res.code===200 && res.data.records) {
+    res.data.records.forEach(l => { rows += `<tr><td>${l.id}</td><td>${l.bookId}</td><td>${l.lossNum}</td><td>${lm[l.lossType]||'-'}</td><td>${l.lossReason||'-'}</td><td>${(l.recordTime||'').substring(0,10)}</td></tr>`; });
+  }
+  document.getElementById('pageContent').innerHTML = pageHeader('🗑️ 损耗管理', '<button class="btn btn-pri btn-sm" onclick="showLossForm()">+ 登记损耗</button>') + `<div class="card">${buildTable(['ID','图书','数量','类型','原因','时间'], rows)}</div>`;
+};
+function showLossForm() { openModal(`<h3>登记损耗</h3><div class="fg"><label>图书ID</label><input id="fl_book" type="number"></div><div class="fg"><label>数量</label><input id="fl_num" type="number"></div><div class="fg"><label>类型</label><select id="fl_type"><option value="1">破损</option><option value="2">丢失</option><option value="3">报废</option></select></div><div class="fg"><label>原因</label><input id="fl_reason"></div><div class="btn-row"><button class="btn btn-out" onclick="closeModal()">取消</button><button class="btn btn-pri" onclick="doLoss()">提交</button></div>`); }
+async function doLoss() { const r = await apiCall('/sys/loss/register',{method:'POST',body:JSON.stringify({bookId:parseInt(document.getElementById('fl_book').value),lossNum:parseInt(document.getElementById('fl_num').value),lossType:parseInt(document.getElementById('fl_type').value),lossReason:document.getElementById('fl_reason').value})}); if (r.code===200){toast(r.message);closeModal();router.nav('loss');} else toast(r.message,'err'); }
+
+// --- Statistics ---
+router.pages.statistics = async function() {
+  const [bs, us, brs] = await Promise.all([apiCall('/sys/statistics/book'), apiCall('/sys/statistics/user'), apiCall('/sys/statistics/borrow')]);
+  let s = '';
+  if (bs.code===200) { s += statCard('📚','b',bs.data.totalBooks,'图书总量') + statCard('📦','g',bs.data.totalStock,'总库存') + statCard('📭','o',bs.data.emptyStockBooks,'缺货') + statCard('🗑️','r',bs.data.totalLoss,'损耗'); }
+  if (us.code===200) { s += statCard('👥','b',us.data.totalUsers,'总用户') + statCard('🎓','g',us.data.studentCount,'学生') + statCard('👨‍🏫','o',us.data.teacherCount,'教师') + statCard('🔥','r',us.data.activeUsers,'活跃'); }
+  if (brs.code===200) { s += statCard('📋','b',brs.data.totalBorrow,'总借阅') + statCard('✅','g',brs.data.totalReturn,'总归还') + statCard('🔄','o',brs.data.totalRenew,'总续借') + statCard('⚠️','r',brs.data.overdueRate,'逾期率'); }
+  let catRows = '';
+  if (bs.code===200 && bs.data.categoryStats) { catRows = bs.data.categoryStats.map(c => `<tr><td>${c.categoryName}</td><td>${badge(c.count+'本','inf')}</td></tr>`).join(''); }
+  document.getElementById('pageContent').innerHTML = pageHeader('📈 数据统计') + `<div class="sg">${s}</div><div class="card"><div class="card-h"><h3>各分类图书数量</h3></div>${buildTable(['分类','数量'], catRows)}</div>`;
+};
+
+// --- Logs ---
+router.pages.logs = async function(p) {
+  p = p || { tab: '1' };
+  const tabs = { '1': '操作日志', '2': '业务日志', '3': '异常日志' };
+  let th = '<div class="tabs">';
+  Object.entries(tabs).forEach(([k,v]) => th += `<a class="${p.tab===k?'active':''}" onclick="router.nav('logs',{tab:'${k}'})">${v}</a>`);
+  th += '</div>';
+  const res = await apiCall(`/sys/log/page?logType=${p.tab}&current=1&size=30`);
+  let rows = '';
+  if (res.code===200 && res.data.records) {
+    res.data.records.forEach(l => { rows += `<tr><td>${l.id}</td><td>${l.userId||'-'}</td><td>${l.operation||'-'}</td><td>${l.requestUrl||'-'}</td><td>${l.ipAddr||'-'}</td><td>${(l.createTime||'').substring(0,16)}</td></tr>`; });
+  }
+  document.getElementById('pageContent').innerHTML = pageHeader('📝 系统日志') + `<div class="card">${th}${buildTable(['ID','用户','操作','接口','IP','时间'], rows)}</div>`;
+};
+
+// --- Config ---
+router.pages.config = async function() {
+  const res = await apiCall('/sys/config/page?current=1&size=50');
+  let rows = '';
+  if (res.code===200 && res.data.records) {
+    res.data.records.forEach(c => { rows += `<tr><td>${c.configKey}</td><td>${c.configValue}</td><td>${c.configName}</td><td>${c.remark||'-'}</td><td class="act"><button class="btn btn-out btn-xs" onclick="editCfg(${c.id},'${c.configKey}','${c.configValue}','${c.configName}','${c.remark||''}')">编辑</button><button class="btn btn-dan btn-xs" onclick="delCfg(${c.id})">删除</button></td></tr>`; });
+  }
+  document.getElementById('pageContent').innerHTML = pageHeader('⚙️ 系统配置', '<button class="btn btn-pri btn-sm" onclick="showCfgForm()">+ 新增</button>') + `<div class="card">${buildTable(['键名','值','名称','备注','操作'], rows)}</div>`;
+};
+function showCfgForm() { openModal(`<h3>新增配置</h3><div class="fg"><label>键名</label><input id="fcg_key"></div><div class="fg"><label>值</label><input id="fcg_val"></div><div class="fg"><label>名称</label><input id="fcg_name"></div><div class="fg"><label>备注</label><input id="fcg_remark"></div><div class="btn-row"><button class="btn btn-out" onclick="closeModal()">取消</button><button class="btn btn-pri" onclick="saveCfg(0)">保存</button></div>`); }
+function editCfg(id,key,val,name,rem) { openModal(`<h3>编辑配置</h3><div class="fg"><label>键名</label><input id="fcg_key" value="${key}"></div><div class="fg"><label>值</label><input id="fcg_val" value="${val}"></div><div class="fg"><label>名称</label><input id="fcg_name" value="${name}"></div><div class="fg"><label>备注</label><input id="fcg_remark" value="${rem}"></div><div class="btn-row"><button class="btn btn-out" onclick="closeModal()">取消</button><button class="btn btn-pri" onclick="saveCfg(${id})">保存</button></div>`); }
+async function saveCfg(id) { const data = { configKey: document.getElementById('fcg_key').value, configValue: document.getElementById('fcg_val').value, configName: document.getElementById('fcg_name').value, remark: document.getElementById('fcg_remark').value }; if (id) data.id = id; const r = await apiCall(id?'/sys/config/update':'/sys/config/add',{method:'POST',body:JSON.stringify(data)}); if (r.code===200){toast(r.message);closeModal();router.nav('config');} else toast(r.message,'err'); }
+async function delCfg(id) { confirm('确认删除？', async () => { const r = await apiCall(`/sys/config/delete/${id}`,{method:'DELETE'}); if (r.code===200){toast(r.message);router.nav('config');} else toast(r.message,'err'); }); }
+
+// --- User Frontend ---
+router.pages.home = async function() {
+  const [hot, nb] = await Promise.all([apiCall('/sys/book/hot'), apiCall('/sys/book/new')]);
+  let hotH = '', newH = '';
+  if (hot.code===200 && hot.data) hot.data.slice(0,6).forEach(b => hotH += `<a href="#" onclick="router.nav('bookDetail',${b.id})" style="display:block;padding:10px 0;border-bottom:1px solid var(--bd)">📖 ${b.bookName} <small style="color:var(--tx2)">${b.author||''}</small></a>`);
+  if (nb.code===200 && nb.data) nb.data.slice(0,6).forEach(b => newH += `<a href="#" onclick="router.nav('bookDetail',${b.id})" style="display:block;padding:10px 0;border-bottom:1px solid var(--bd)">🆕 ${b.bookName} <small style="color:var(--tx2)">${b.author||''}</small></a>`);
+  document.getElementById('pageContent').innerHTML = pageHeader('🏠 图书首页')
+    + `<div class="sg">${statCard('📚','b',USER.maxBorrow-USER.borrowNum,'剩余可借')}${statCard('📋','o',USER.borrowNum,'已借数量')}${statCard('⚠️','r','-','待处理逾期')}${statCard('📌','g','-','有效预约')}</div>`
+    + `<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px"><div class="card"><div class="card-h"><h3>🔥 热门图书</h3></div>${hotH||'<div class="empty">暂无</div>'}</div><div class="card"><div class="card-h"><h3>🆕 新书上架</h3></div>${newH||'<div class="empty">暂无</div>'}</div></div>`
+    + `<div class="qa"><a onclick="router.nav('search')"><span class="emoji">🔍</span>图书检索</a><a onclick="router.nav('myBorrows')"><span class="emoji">📋</span>我的借阅</a><a onclick="router.nav('myReserves')"><span class="emoji">📌</span>我的预约</a><a onclick="router.nav('myOverdue')"><span class="emoji">⚠️</span>逾期账单</a></div>`;
+};
+
+router.pages.search = async function(p) {
+  p = p || { page: 1, name: '' };
+  const q = new URLSearchParams({ current: p.page, size: 12 });
+  if (p.name) q.set('bookName', p.name);
+  const res = await apiCall(`/sys/book/page?${q}`);
+  let rows = '';
+  if (res.code===200 && res.data.records) {
+    res.data.records.forEach(b => { rows += `<tr><td>${b.bookNo}</td><td><a href="#" onclick="router.nav('bookDetail',${b.id})"><b>${b.bookName}</b></a></td><td>${b.author}</td><td>${b.publisher||'-'}</td><td>${b.remainNum}/${b.totalNum}</td><td>${badge(b.remainNum>0?'可借':'不可借',b.remainNum>0?'suc':'dan')}</td><td class="act">${b.status===1&&b.remainNum>0?`<button class="btn btn-pri btn-xs" onclick="doBorrow(${b.id})">借阅</button>`:b.status===1?`<button class="btn btn-war btn-xs" onclick="doReserve(${b.id})">预约</button>`:''}</td></tr>`; });
+  }
+  document.getElementById('pageContent').innerHTML = pageHeader('🔍 图书检索')
+    + `<div class="card"><div class="tb"><input placeholder="🔍 搜索书名" id="s_name" value="${p.name||''}" onkeydown="if(event.key==='Enter')searchUB()"><button class="btn btn-out btn-sm" onclick="searchUB()">搜索</button></div>${buildTable(['编号','书名','作者','出版社','库存','状态','操作'], rows)}${res.code===200?pagination(res.data.current,res.data.pages,res.data.total,'search'):''}</div>`;
+};
+function searchUB() { router.nav('search',{page:1,name:document.getElementById('s_name').value}); }
+async function doBorrow(id) { const r = await apiCall(`/borrow/${id}`,{method:'POST'}); if (r.code===200) toast(r.message); else toast(r.message,'err'); }
+async function doReserve(id) { const r = await apiCall(`/reserve/${id}`,{method:'POST'}); if (r.code===200) toast(r.message); else toast(r.message,'err'); }
+
+router.pages.bookDetail = async function(id) {
+  const res = await apiCall(`/sys/book/detail/${id}`);
+  if (res.code!==200) { document.getElementById('pageContent').innerHTML = '<div class="empty"><div class="icon">❌</div>图书不存在</div>'; return; }
+  const b = res.data;
+  document.getElementById('pageContent').innerHTML = pageHeader(`📖 ${b.bookName}`)
+    + `<div class="card"><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div><b>编号:</b> ${b.bookNo}</div><div><b>ISBN:</b> ${b.isbn}</div><div><b>作者:</b> ${b.author}</div><div><b>出版社:</b> ${b.publisher||'-'}</div><div><b>价格:</b> ¥${b.price||0}</div><div><b>库存:</b> ${b.remainNum}/${b.totalNum}</div><div><b>位置:</b> ${b.location||'-'}</div><div><b>状态:</b> ${badge(b.status===1?'在架':'下架',b.status===1?'suc':'dan')}</div></div>${b.bookDesc?`<div style="margin-top:16px;padding:12px;background:var(--bg);border-radius:8px"><b>简介:</b> ${b.bookDesc}</div>`:''}<div style="margin-top:16px;display:flex;gap:8px">${b.status===1&&b.remainNum>0?`<button class="btn btn-pri" onclick="doBorrow(${b.id})">📥 立即借阅</button>`:b.status===1?`<button class="btn btn-war" onclick="doReserve(${b.id})">📌 预约</button>`:''}<button class="btn btn-out" onclick="history.back()">返回</button></div></div>`;
+};
+
+// --- My Borrows/Reserves/Overdue ---
+router.pages.myBorrows = async function() {
+  const res = await apiCall('/borrow/my-borrows?current=1&size=50');
+  const sm = { 1: ['借阅中','inf'], 2: ['已归还','suc'], 3: ['已逾期','dan'] };
+  let rows = '';
+  if (res.code===200 && res.data.records) {
+    res.data.records.forEach(b => { const [t,c] = sm[b.borrowStatus]||['未知','gray']; rows += `<tr><td>${b.bookId}</td><td>${(b.borrowTime||'').substring(0,10)}</td><td>${(b.expireTime||'').substring(0,10)}</td><td>${badge(t,c)}</td><td class="act">${b.borrowStatus===1?`<button class="btn btn-war btn-xs" onclick="renewBk(${b.id})">续借</button><button class="btn btn-suc btn-xs" onclick="retBk(${b.id})">归还</button>`:''}</td></tr>`; });
+  }
+  document.getElementById('pageContent').innerHTML = pageHeader('📋 我的借阅') + `<div class="card">${buildTable(['图书ID','借阅日','到期日','状态','操作'], rows)}</div>`;
+};
+async function renewBk(id) { const r = await apiCall(`/borrow/renew/${id}`,{method:'POST'}); if (r.code===200){toast(r.message);router.nav('myBorrows');} else toast(r.message,'err'); }
+async function retBk(id) { confirm('确认归还？', async () => { const r = await apiCall(`/borrow/return/${id}`,{method:'POST'}); if (r.code===200){toast(r.message);router.nav('myBorrows');} else toast(r.message,'err'); }); }
+
+router.pages.myReserves = async function() {
+  const res = await apiCall('/reserve/my-reserves?current=1&size=50');
+  const sm = { 1: ['待生效','inf'], 2: ['已完成','suc'], 3: ['已失效','gray'] };
+  let rows = '';
+  if (res.code===200 && res.data.records) {
+    res.data.records.forEach(r => { const [t,c] = sm[r.reserveStatus]||['未知','gray']; rows += `<tr><td>${r.bookId}</td><td>${(r.reserveTime||'').substring(0,10)}</td><td>${(r.expireTime||'').substring(0,10)}</td><td>${badge(t,c)}</td><td class="act">${r.reserveStatus===1?`<button class="btn btn-dan btn-xs" onclick="cancelRsv(${r.id})">取消</button>`:''}</td></tr>`; });
+  }
+  document.getElementById('pageContent').innerHTML = pageHeader('📌 我的预约') + `<div class="card">${buildTable(['图书ID','预约日','失效日','状态','操作'], rows)}</div>`;
+};
+async function cancelRsv(id) { confirm('确认取消？', async () => { const r = await apiCall(`/reserve/cancel/${id}`,{method:'POST'}); if (r.code===200){toast(r.message);router.nav('myReserves');} else toast(r.message,'err'); }); }
+
+router.pages.myOverdue = async function() {
+  const [res, sum] = await Promise.all([apiCall('/overdue/my-overdue?current=1&size=50'), apiCall('/overdue/summary')]);
+  let rows = '', sh = '';
+  if (sum.code===200) sh = `<div style="margin-bottom:16px;padding:12px;background:${sum.data.canBorrow?'#e6f9f5':'#fde8ec'};border-radius:8px">未缴: <b>${sum.data.unpaidCount}笔</b> | 总额: <b>¥${sum.data.totalFine}</b> | ${badge(sum.data.canBorrow?'可借阅':'已限制',sum.data.canBorrow?'suc':'dan')}</div>`;
+  if (res.code===200 && res.data.records) {
+    res.data.records.forEach(o => { rows += `<tr><td>${o.bookId}</td><td>${o.overdueDays}天</td><td>¥${o.fineMoney}</td><td>${badge(o.payStatus===1?'已缴':'未缴',o.payStatus===1?'suc':'dan')}</td><td class="act">${o.payStatus===0?`<button class="btn btn-suc btn-xs" onclick="payFine(${o.id})">缴费</button>`:''}</td></tr>`; });
+  }
+  document.getElementById('pageContent').innerHTML = pageHeader('⚠️ 逾期账单') + `<div class="card">${sh}${buildTable(['图书','天数','罚款','状态','操作'], rows)}</div>`;
+};
+async function payFine(id) { confirm('确认缴纳？', async () => { const r = await apiCall(`/overdue/pay/${id}`,{method:'POST'}); if (r.code===200){toast(r.message);router.nav('myOverdue');} else toast(r.message,'err'); }); }
+
+// --- Profile & Change Pwd ---
+router.pages.profile = async function() {
+  const res = await apiCall('/auth/user-info');
+  if (res.code!==200) return;
+  const u = res.data; const tm = {1:'学生',2:'教师',3:'管理员'};
+  document.getElementById('pageContent').innerHTML = pageHeader('👤 个人中心')
+    + `<div class="card"><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div><b>账号:</b> ${u.userAccount}</div><div><b>姓名:</b> ${u.userName}</div><div><b>角色:</b> ${badge(u.roleName,u.roleCode==='admin'?'dan':'inf')}</div><div><b>类型:</b> ${tm[u.userType]||'-'}</div><div><b>手机:</b> ${u.phone||'-'}</div><div><b>邮箱:</b> ${u.email||'-'}</div><div><b>已借:</b> ${u.borrowNum}/${u.maxBorrow}</div><div><b>剩余:</b> ${badge(u.remainingBorrow+'本','suc')}</div><div><b>借阅中:</b> ${u.currentBorrowCount}本</div><div><b>逾期:</b> ${badge(u.overdueCount+'笔',u.overdueCount>0?'dan':'suc')}</div></div></div>`;
+};
+router.pages.changePwd = function() {
+  document.getElementById('pageContent').innerHTML = pageHeader('🔒 修改密码')
+    + `<div class="card" style="max-width:500px"><div class="fg"><label>原密码</label><input id="cp_old" type="password"></div><div class="fg"><label>新密码</label><input id="cp_new" type="password"></div><div class="fg"><label>确认新密码</label><input id="cp_cfm" type="password"></div><button class="btn btn-pri btn-block" onclick="chgPwd()">修改密码</button><p style="margin-top:12px;color:var(--tx2);font-size:12px">修改成功后需重新登录</p></div>`;
+};
+async function chgPwd() {
+  const o = document.getElementById('cp_old').value, n = document.getElementById('cp_new').value, c = document.getElementById('cp_cfm').value;
+  if (!o||!n||!c) { toast('请填写完整','err'); return; }
+  if (n!==c) { toast('两次密码不一致','err'); return; }
+  if (n.length<6) { toast('密码至少6位','err'); return; }
+  const r = await apiCall('/auth/change-password',{method:'POST',body:JSON.stringify({oldPassword:o,newPassword:n})});
+  if (r.code===200) { toast('修改成功，请重新登录'); setTimeout(()=>logout(),1500); } else toast(r.message,'err');
+}
+router.pages['403'] = () => document.getElementById('pageContent').innerHTML = `<div class="empty" style="padding:80px"><div class="icon">🚫</div><h2>403 无权限</h2><p style="color:var(--tx2);margin:12px 0 20px">您没有权限访问此页面</p><button class="btn btn-pri" onclick="router.nav(isStaff()?'dashboard':'home')">返回首页</button></div>`;
+router.pages['404'] = () => document.getElementById('pageContent').innerHTML = `<div class="empty" style="padding:80px"><div class="icon">🔍</div><h2>404 页面不存在</h2><p style="color:var(--tx2);margin:12px 0 20px">页面不存在或已删除</p><button class="btn btn-pri" onclick="router.nav(isStaff()?'dashboard':'home')">返回首页</button></div>`;
+
+// ==================== INIT ====================
+(function() {
+  const acc = localStorage.getItem('lib_account'), pwd = localStorage.getItem('lib_pwd');
+  if (acc) { document.getElementById('loginAccount').value = acc; document.getElementById('rememberPwd').checked = true; }
+  if (pwd) { try { document.getElementById('loginPassword').value = atob(pwd); } catch(e) {} }
+  if (TOKEN && USER) { showApp(); router.init(); }
+})();
+</script>
+</body>
+</html>

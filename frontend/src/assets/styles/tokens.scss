@@ -1,0 +1,115 @@
+// ============================================
+// 设计令牌 (Design Tokens)
+// 校园图书管理系统 — 现代靛蓝主题
+// ============================================
+
+:root {
+  // === 主色调 (现代靛蓝) ===
+  --color-primary: #5B6AF0;
+  --color-primary-light-1: #7B8AF5;
+  --color-primary-light-2: #A5AFFA;
+  --color-primary-light-3: #EBEDFF;
+  --color-primary-dark-1: #4A56D4;
+  --color-primary-dark-2: #3B42B8;
+
+  // === 侧边栏 ===
+  --sidebar-bg: #1B1B2F;
+  --sidebar-bg-hover: #2A2A44;
+  --sidebar-bg-active: rgba(91, 106, 240, 0.12);
+  --sidebar-text: #B0B8D1;
+  --sidebar-text-active: #FFFFFF;
+  --sidebar-active-border: #5B6AF0;
+  --sidebar-logo-gradient: linear-gradient(135deg, #5B6AF0, #8B5CF6);
+
+  // === 页面背景 ===
+  --bg-page: #F1F3F9;
+  --bg-card: #FFFFFF;
+  --bg-overlay: rgba(27, 27, 47, 0.45);
+
+  // === 文字 ===
+  --text-primary: #1E2747;
+  --text-regular: #48506B;
+  --text-secondary: #717894;
+  --text-placeholder: #A0A8C0;
+  --text-disabled: #C5CBD9;
+
+  // === 边框 ===
+  --border-base: #E3E6F0;
+  --border-light: #EEF0F6;
+  --border-dark: #CDD1DE;
+
+  // === 阴影 ===
+  --shadow-xs: 0 1px 2px rgba(30, 39, 71, 0.04);
+  --shadow-sm: 0 2px 8px rgba(30, 39, 71, 0.06);
+  --shadow-md: 0 4px 16px rgba(30, 39, 71, 0.08);
+  --shadow-lg: 0 8px 32px rgba(30, 39, 71, 0.10);
+  --shadow-xl: 0 16px 48px rgba(30, 39, 71, 0.14);
+
+  // === 圆角 ===
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+
+  // === 状态颜色 ===
+  --color-success: #22C55E;
+  --color-success-light: #DCFCE7;
+  --color-warning: #F59E0B;
+  --color-warning-light: #FFF7ED;
+  --color-danger: #EF4444;
+  --color-danger-light: #FEE2E2;
+  --color-info: #3B82F6;
+  --color-info-light: #DBEAFE;
+
+  // === 间距 ===
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+
+  // === 过渡 ===
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+
+  // === 字体 ===
+  --font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-base: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+  --font-size-3xl: 30px;
+
+  // === Element Plus 覆盖变量 ===
+  --el-color-primary: var(--color-primary);
+  --el-color-primary-light-3: var(--color-primary-light-3);
+  --el-color-primary-light-5: var(--color-primary-light-2);
+  --el-color-primary-light-7: var(--color-primary-light-1);
+  --el-color-primary-light-8: #D8DBFF;
+  --el-color-primary-light-9: #EEEFFF;
+  --el-color-primary-dark-2: var(--color-primary-dark-2);
+  --el-color-success: var(--color-success);
+  --el-color-warning: var(--color-warning);
+  --el-color-danger: var(--color-danger);
+  --el-color-info: var(--color-info);
+  --el-border-radius-base: var(--radius-sm);
+  --el-border-radius-small: var(--radius-xs);
+  --el-border-radius-round: 20px;
+  --el-border-color: var(--border-base);
+  --el-border-color-light: var(--border-light);
+  --el-text-color-primary: var(--text-primary);
+  --el-text-color-regular: var(--text-regular);
+  --el-text-color-secondary: var(--text-secondary);
+  --el-text-color-placeholder: var(--text-placeholder);
+  --el-bg-color: var(--bg-card);
+  --el-bg-color-page: var(--bg-page);
+  --el-bg-color-overlay: var(--bg-card);
+  --el-box-shadow-light: var(--shadow-sm);
+  --el-box-shadow: var(--shadow-md);
+  --el-box-shadow-dark: var(--shadow-lg);
+}
